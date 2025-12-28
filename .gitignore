@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build Output
+dist
+lib
+*.tsbuildinfo
+
+# Testing & Coverage
+coverage
+test_vectors/
+!test_vectors/.keep
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode
+.idea
+
+# System
+.DS_Store

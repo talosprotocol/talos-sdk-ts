@@ -19,7 +19,21 @@ npm install @talos-protocol/client @talos-protocol/sdk
 
 ## Usage
 
-See [Wiki: SDK Integration](../../docs/wiki/SDK-Integration.md) for full documentation.
+## Architecture
+
+```mermaid
+graph TD
+    Vectors[Protocol Test Vectors] -->|Validation| SDK[@talos-protocol/sdk]
+    SDK -->|Primitives| Client[@talos-protocol/client]
+    Client -->|Usage| App[User Application]
+```
+
+## Documentation
+
+- **Core SDK**: `packages/sdk` - Cryptography, Canonical JSON, Frames.
+- **Client**: `packages/client` - High-level Agent & Transport.
+
+See `.agent/workflows` for detailed build and test procedures.
 
 ### Quick Example
 
