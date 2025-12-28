@@ -23,8 +23,8 @@ npm install @talos-protocol/client @talos-protocol/sdk
 
 ```mermaid
 graph TD
-    Vectors[Protocol Test Vectors] -->|Validation| SDK[@talos-protocol/sdk]
-    SDK -->|Primitives| Client[@talos-protocol/client]
+    Vectors[Protocol Test Vectors] -->|Validation| SDK["@talos-protocol/sdk"]
+    SDK -->|Primitives| Client["@talos-protocol/client"]
     Client -->|Usage| App[User Application]
 ```
 
