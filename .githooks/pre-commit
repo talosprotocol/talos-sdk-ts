@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# 1) Version bump every commit
+node scripts/version-sync.mjs
+git add package.json
+
+# Optional: keep lockfile consistent if you use pnpm
+if [ -f pnpm-lock.yaml ]; then
+  pnpm -s install --lockfile-only
+  git add pnpm-lock.yaml
+fi
+
+# 2) Lint staged
+if [ -f package.json ]; then
+  # You can replace with npm/yarn if needed
+  npx lint-staged
+fi
+
+# 3) Typecheck + tests
+npm run typecheck
+npm test
+
+# 4) Dashboard-only gates if script exists
+if [ -f scripts/gates-contracts.sh ]; then
+  npm run gates:contracts
+fi
+
+# 5) Enforce contracts package name (SDK too)
+if rg -n "@talos-protocol/contracts" -S .; then
+  echo "ERROR: wrong contracts package name (@talos-protocol/contracts). Use @talosprotocol/contracts."
+  exit 1
+fi
