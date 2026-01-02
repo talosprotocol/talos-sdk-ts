@@ -24,3 +24,10 @@ test_vectors/
 
 # System
 .DS_Store
+
+# Husky
+.husky/_
+
+# Package manager
+package-lock.json
+
