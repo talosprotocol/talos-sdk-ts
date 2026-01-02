@@ -1,18 +1,35 @@
 {
   "name": "talos-sdk-monorepo",
+  "version": "0.1.5",
   "private": true,
   "scripts": {
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier -w .",
+    "typecheck": "tsc --build",
+    "version:sync": "node ./scripts/version-sync.mjs",
+    "gates:contracts": "bash ./scripts/contract-gates.sh",
     "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier -w"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier -w"
+    ]
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "eslint": "^8.57.0",
     "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.7.4",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3",
     "vitest": "^1.2.1"

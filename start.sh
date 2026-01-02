@@ -16,4 +16,4 @@ npm run build
 
 # Run Client Example
 echo "▶️  Running Client E2E..."
-npm run example:e2e -w @talos-protocol/client
+npm run example:e2e -w @talosprotocol/client

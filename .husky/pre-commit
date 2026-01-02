@@ -1,12 +1,31 @@
-#!/bin/sh
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+set -e
+
 echo "🔍 Running pre-commit validation..."
 
-# 1. Tests (skip lint if not configured)
-echo "Running tests..."
-npm test
-if [ $? -ne 0 ]; then
-    echo "❌ Tests failed"
-    exit 1
-fi
+# 1. Version bump
+echo "📦 Syncing version..."
+npm run version:sync
+
+# 2. Contract compliance gates
+echo "🔒 Running contract compliance gates..."
+npm run gates:contracts
+
+# 3. Lint-staged
+echo "✨ Running lint-staged..."
+npx lint-staged
+
+# 4. Typecheck
+echo "📝 Running typecheck..."
+npm run typecheck
+
+# 5. Tests
+echo "🧪 Running tests..."
+npm run test
+
+# 6. Stage version bump
+git add package.json
 
 echo "✅ All pre-commit checks passed"
