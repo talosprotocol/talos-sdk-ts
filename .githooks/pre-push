@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
-npm test
+
+npm run test
+
+if [ -f scripts/gates-contracts.sh ]; then
+  bash scripts/gates-contracts.sh
+fi
