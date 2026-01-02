@@ -1,67 +1,39 @@
-# Architecture
+# talos-sdk-ts Architecture
 
 ## Overview
+`talos-sdk-ts` provides the TypeScript SDK for browser and Node.js environments.
 
-The Talos TypeScript SDK is a monorepo containing two packages for building Talos-compatible applications.
+## Internal Components
 
-## Package Structure
+| Component | Purpose |
+|-----------|---------|
+| `packages/sdk/` | Core SDK package |
+| `packages/types/` | Shared TypeScript types |
 
-```mermaid
-graph TD
-    subgraph Monorepo ["@talosprotocol"]
-        SDK["@talosprotocol/sdk"]
-        Client["@talosprotocol/client"]
-    end
+## External Dependencies
 
-    subgraph SDK Modules
-        Crypto[Cryptography]
-        JSON[Canonical JSON]
-        Frames[Protocol Frames]
-    end
+| Dependency | Type | Usage |
+|------------|------|-------|
+| `[EXTERNAL]` @talosprotocol/contracts | NPM | Cursor, Base64url, schemas |
 
-    subgraph Client Modules
-        Agent[TalosAgent]
-        Transport[Transport Layer]
-        Sign[MCP Signing]
-    end
+## Contracts Used
 
-    SDK --> Crypto & JSON & Frames
-    Client --> Agent & Transport & Sign
-    Client --> SDK
-```
+| Artifact | Version |
+|----------|---------|
+| `deriveCursor` | @talosprotocol/contracts@^1.0 |
+| `decodeCursor` | @talosprotocol/contracts@^1.0 |
+| `base64urlEncode` | @talosprotocol/contracts@^1.0 |
+| `base64urlDecode` | @talosprotocol/contracts@^1.0 |
 
-## Dependency Flow
+## Boundary Rules
+- ✅ Re-export from contracts, never reimplement
+- ❌ No `btoa`/`atob` usage (use contracts base64url)
+- ✅ All types must align with contract schemas
+
+## Data Flow
 
 ```mermaid
 graph LR
-    Vectors[Test Vectors] -->|"Validate"| SDK
-    SDK -->|"Primitives"| Client
-    Client -->|"API"| App[User Application]
+    App[Browser/Node App] --> SDK[talos-sdk-ts]
+    SDK --> |imports| TC[EXTERNAL: @talosprotocol/contracts]
 ```
-
-## Packages
-
-### @talosprotocol/sdk
-
-Core cryptographic primitives and protocol utilities:
-
-| Module   | Description                          |
-| -------- | ------------------------------------ |
-| `crypto` | Ed25519 signing, X25519 key exchange |
-| `json`   | Canonical JSON serialization         |
-| `frames` | Protocol frame encoding/decoding     |
-| `did`    | DID:key utilities                    |
-
-### @talosprotocol/client
-
-High-level client for building Talos agents:
-
-| Module                | Description                           |
-| --------------------- | ------------------------------------- |
-| `TalosAgent`          | Identity and key management           |
-| `signMcpRequest`      | Sign MCP requests with audit bindings |
-| `InMemoryKeyProvider` | Development key storage               |
-
-## Vector Compliance
-
-Both packages are validated against the canonical `test_vectors/` from the Python implementation, ensuring cross-language interoperability.
