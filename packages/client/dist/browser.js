@@ -1,5 +1,9 @@
 // src/agent.ts
-import { generateKeyPair, sign, fromSeed } from "@talos-protocol/sdk";
+import {
+  generateKeyPair,
+  sign,
+  fromSeed
+} from "@talosprotocol/sdk";
 var InMemoryKeyProvider = class {
   publicKey;
   privateKey;
@@ -46,7 +50,7 @@ import {
   canonicalize,
   encodeBase64Url,
   verifyFrame
-} from "@talos-protocol/sdk";
+} from "@talosprotocol/sdk";
 async function signMcpRequest(agent, request, sessionId, correlationId, tool, method) {
   const requestHash = await computeRequestHash(request);
   const cap = await agent.capStore.get(tool, method);

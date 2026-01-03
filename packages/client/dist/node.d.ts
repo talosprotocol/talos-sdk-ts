@@ -1,4 +1,4 @@
-import { Capability, McpMessageFrame, McpResponseFrame } from '@talos-protocol/sdk';
+import { Capability, McpMessageFrame, McpResponseFrame } from '@talosprotocol/sdk';
 
 interface KeyProvider {
     getPublicKey(): Promise<Uint8Array>;
