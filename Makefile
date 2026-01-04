@@ -29,19 +29,28 @@ lint:
 
 # Clean all generated files and dependencies
 clean:
-	@echo "Cleaning..."
-	rm -rf node_modules
-	rm -rf dist build out
-	rm -rf .next .turbo
-	rm -rf coverage
-	rm -rf .eslintcache
-	@echo "Clean complete. Ready for fresh build."
 
-# Conformance test
+format:
+	# Auto-fix style
+	npm run format
+	npm run lint:fix
+
+test:
+	# Unit tests
+	npm run test
+
 conformance:
+	# Run conformance vectors
 	@echo "Running conformance tests..."
-	@echo "Running conformance tests..."
+	# Passing args to npm script requires --
 	npm test -w @talosprotocol/sdk -- tests/vectors.test.ts
+
+build:
+	npm run build
+
+clean:
+	rm -rf dist node_modules packages/*/dist packages/*/node_modules
+
 
 # Doctor check
 doctor:
