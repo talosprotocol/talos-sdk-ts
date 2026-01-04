@@ -1,34 +1,16 @@
-# talos-sdk-ts Makefile
-# TypeScript SDK for Talos Protocol
+# Universal Makefile Interface
+all: install lint test build conformance
 
-.PHONY: install build test lint clean start stop
-
-# Default target
-all: install build test
-
-# Install dependencies
 install:
-	@echo "Installing dependencies..."
-	npm ci
+	npm install
 
-# Build
-build:
-	@echo "Building..."
-	npm run build
-
-# Run tests
-test:
-	@echo "Running tests..."
-	npm test -- --run
-
-# Lint check
-lint:
-	@echo "Running lint..."
-	npm run lint
+typecheck:
+	# Language specific type check
 	npm run typecheck
 
-# Clean all generated files and dependencies
-clean:
+lint:
+	# Style + Types (Fail on error)
+	npm run lint
 
 format:
 	# Auto-fix style
@@ -50,18 +32,3 @@ build:
 
 clean:
 	rm -rf dist node_modules packages/*/dist packages/*/node_modules
-
-
-# Doctor check
-doctor:
-	@echo "Checking environment..."
-	@node --version || echo "Node.js missing"
-	@npm --version || echo "npm missing"
-	@[ -d "node_modules" ] && echo "node_modules detected" || echo "No node_modules"
-
-# Scripts wrapper
-start:
-	@./scripts/start.sh
-
-stop:
-	@./scripts/stop.sh
