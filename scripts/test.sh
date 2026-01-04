@@ -1,30 +1,31 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
 # =============================================================================
 # talos-sdk-ts Test Script
 # =============================================================================
+set -euo pipefail
 
-echo "Testing talos-sdk-ts..."
+log() { printf '%s\n' "$*"; }
+info() { printf 'ℹ️  %s\n' "$*"; }
 
-echo "Installing dependencies..."
+info "Testing talos-sdk-ts..."
+
+info "Installing dependencies..."
 npm ci --silent
 
-echo "Running lint..."
+info "Running lint..."
 npm run lint
 
-echo "Running format check..."
+info "Running format check..."
 npm run format:check 2>/dev/null || echo "format:check not configured"
 
-echo "Running typecheck..."
+info "Running typecheck..."
 npm run typecheck
 
-echo "Running tests..."
+info "Running tests..."
 npm test -- --run
 
 if [[ "${TALOS_SKIP_BUILD:-false}" != "true" ]]; then
-  echo "Running build..."
+  info "Running build..."
   npm run build
 fi
 
-echo "talos-sdk-ts tests passed."
+log "✓ talos-sdk-ts tests passed."
