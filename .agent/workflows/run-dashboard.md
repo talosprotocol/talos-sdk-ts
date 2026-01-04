@@ -19,8 +19,10 @@ Run the unified start script:
 ```bash
 ./start.sh
 ```
+
 // turbo
 This will:
+
 1. **Kill existing processes** (uvicorn, next dev, traffic_gen.py)
 2. Check dependencies
 3. Install Python packages (if missing)
@@ -32,6 +34,7 @@ This will:
 ## Dashboard Features (v3.2)
 
 ### Overview Page (`/`)
+
 - **KPI Grid**: Total Requests, Auth Success Rate, Denial Rate, Latency
 - **Denial Taxonomy Chart**: Pie chart showing breakdown by denial reason
 - **Request Volume Chart**: Stacked area chart (OK/DENY/ERROR over 24h)
@@ -39,6 +42,7 @@ This will:
 - **Status Banners**: Mode indicator (LIVE API / DEMO TRAFFIC), Redaction policy
 
 ### ProofDrawer
+
 - Click any event to open audit proof details
 - Shows integrity state, cryptographic bindings, session context
 - **Export Evidence JSON**: Download v3.2 compliant evidence bundle
@@ -48,17 +52,21 @@ This will:
 If you prefer to run components individually:
 
 1. **Install Dependencies**
+
    ```bash
    make install
    ```
+
    // turbo
 
 2. **Run Backend**
+
    ```bash
    python3 -m uvicorn src.api.server:app --reload --port 8000
    ```
 
 3. **Run Frontend**
+
    ```bash
    cd ui/dashboard
    npm run dev
@@ -72,10 +80,10 @@ If you prefer to run components individually:
 ## Pending Features (v1.1+)
 
 See `/pending-features` workflow for the full list:
+
 - Gap Backfill UI with "Gap in history" banner
 - Cursor Mismatch Banner
 - WebSocket Streaming Mode
 - Audit Explorer Page (`/audit`)
 - Session Intelligence Page (`/sessions`)
 - Gateway Status Page (`/gateway`)
-

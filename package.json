@@ -1,6 +1,6 @@
 {
   "name": "talos-sdk-monorepo",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "private": true,
   "talos": {
     "talos_compatibility": {
