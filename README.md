@@ -1,146 +1,61 @@
-# Talos Protocol TypeScript SDK
+# Talos SDK for TypeScript
 
-> **Implementation-Safe, Interop-Safe, V1 Canonical SDK**
-
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
-[![Node.js 18+](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+**Repo Role**: Official TypeScript/Node.js implementation of the Talos Protocol.
 
 ## Abstract
+The Talos SDK for TypeScript brings secure, autonomous messaging to the JavaScript ecosystem. It provides a robust implementation of the Double Ratchet Algorithm, enabling Node.js agents and web-based clients to communicate securely over the Model Context Protocol (MCP).
 
-This monorepo contains the TypeScript implementation of the Talos Protocol v1, providing cryptographic primitives and high-level client APIs for building secure AI agent applications in browser and Node.js environments.
+## Introduction
+JavaScript is the lingua franca of many agent frameworks. `talos-sdk-ts` ensures that these agents can participate in the Talos secure mesh with the same security guarantees as their system-level counterparts, managing identity keys and session lifecycles automatically.
 
----
-
-## Packages
-
-| Package                                    | Description                                      | Version |
-| ------------------------------------------ | ------------------------------------------------ | ------- |
-| [`@talosprotocol/sdk`](packages/sdk)       | Core primitives (Crypto, Canonical JSON, Frames) | v0.1.0  |
-| [`@talosprotocol/client`](packages/client) | High-level Identity Agent & Transport            | v0.1.0  |
-
----
-
-## Architecture
+## System Architecture
 
 ```mermaid
 graph TD
-    subgraph SDK ["@talosprotocol/sdk"]
-        Crypto[Cryptography]
-        JSON[Canonical JSON]
-        Frames[Protocol Frames]
-    end
-
-    subgraph Client ["@talosprotocol/client"]
-        Agent[TalosAgent]
-        Sign[MCP Signing]
-        Keys[KeyProvider]
-    end
-
-    Client --> SDK
-
-    subgraph Validation
-        Vectors[Test Vectors]
-    end
-
-    Vectors -->|"Validate"| SDK
+    Agent[TS Agent] --> SDK[Talos SDK TS]
+    SDK --> Core[Protocol Logic]
+    SDK --> Crypto[WebCrypto / Sodium]
 ```
 
----
+This SDK is a peer to the Python, Java, and Go implementations.
 
-## Installation
+## Technical Design
+### Modules
+- **src/core**: Ratchet and Session management.
+- **src/encoding**: Base64URL and binary utilities.
+- **src/crypto**: Cryptographic wrappers.
 
+### Data Formats
+- **Input**: MCP JSON-RPC objects.
+- **Output**: JSON Web Encryption (JWE) compatible structure.
+
+## Evaluation
+**Status**: Beta (v1.1.0).
+- **Conformance**: Passing `v1.1.0` release vectors.
+
+## Usage
+### Quickstart
 ```bash
-npm install @talosprotocol/client @talosprotocol/sdk
+npm install @talos/sdk
 ```
 
----
+### Common Workflows
+1.  **Create Identity**:
+    ```typescript
+    const id = await Identity.generate();
+    ```
 
-## Quick Example
+## Operational Interface
+*   `make test`: Run Vitest suite.
+*   `make conformance`: Run vector validation.
+*   `scripts/test.sh`: CI entrypoint.
 
-```typescript
-import {
-  TalosAgent,
-  InMemoryKeyProvider,
-  signMcpRequest,
-} from "@talosprotocol/client";
+## Security Considerations
+*   **Threat Model**: XSS in web contexts, compromised dependencies.
+*   **Guarantees**:
+    *   **Isolation**: Keys handled within isolated memory where possible.
 
-// Initialize agent with DID
-const agent = new TalosAgent("did:key:z6Mk...", new InMemoryKeyProvider());
-
-// Sign an MCP request with audit bindings
-const signedFrame = await signMcpRequest(
-  agent,
-  request,
-  "session-123",
-  "correlation-456",
-  "filesystem",
-  "read",
-);
-```
-
----
-
-## Features
-
-| Feature                 | Description                                         |
-| ----------------------- | --------------------------------------------------- |
-| **Ed25519 Signing**     | Deterministic signatures for auditability           |
-| **X25519 Key Exchange** | Secure key derivation                               |
-| **Canonical JSON**      | Reproducible serialization for hashing              |
-| **DID:key Support**     | W3C DID standard                                    |
-| **MCP Signing**         | Sign MCP requests with session/correlation bindings |
-| **Vector Compliance**   | Validated against Python implementation             |
-
----
-
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Build all packages
-npm run build
-
-# Run tests (including vector compliance)
-npm test
-
-# Run E2E example
-npm run example:e2e -w @talosprotocol/client
-```
-
----
-
-## Vector Compliance
-
-The SDK is validated against test vectors from the canonical Python implementation, ensuring cross-language interoperability:
-
-```bash
-# Fetch latest test vectors
-./scripts/fetch_vectors.sh
-
-# Run vector tests
-npm test
-```
-
----
-
-## Documentation
-
-- **[SDK Reference](docs/wiki/SDK-Reference.md)** - Core SDK API
-- **[Client Reference](docs/wiki/Client-Reference.md)** - Client API
-- **[Architecture](docs/wiki/Architecture.md)** - Package structure
-
----
-
-## Related
-
-- [Talos Protocol](https://github.com/talosprotocol/talos) - Core Python implementation
-- [MCP Cookbook](https://github.com/talosprotocol/talos/wiki/MCP-Cookbook) - Integration guide
-
----
-
-## License
-
-MIT License - See [LICENSE](LICENSE)
+## References
+1.  [Mathematical Security Proof](../talos-docs/Mathematical_Security_Proof.md)
+2.  [Talos Contracts](../talos-contracts/README.md)
+3.  [JWE Specification](https://datatracker.ietf.org/doc/html/rfc7516)
