@@ -11,8 +11,8 @@ export interface KeyProvider {
 }
 
 export class InMemoryKeyProvider implements KeyProvider {
-  private publicKey: Uint8Array;
-  private privateKey: Uint8Array;
+  private readonly publicKey: Uint8Array;
+  private readonly privateKey: Uint8Array;
 
   constructor(seed?: Uint8Array) {
     if (seed) {
@@ -41,7 +41,7 @@ export interface CapabilityStore {
 }
 
 export class InMemoryCapabilityStore implements CapabilityStore {
-  private caps: Capability[] = [];
+  private readonly caps: Capability[] = [];
 
   async put(cap: Capability): Promise<void> {
     this.caps.push(cap);
@@ -49,12 +49,6 @@ export class InMemoryCapabilityStore implements CapabilityStore {
 
   async get(tool: string, _method: string): Promise<Capability | undefined> {
     // Simple lookup: find capability that covers scope.
-    // In v1 we might just match scope string perfectly or assume "tool:name".
-    // "scope = tool:<name>[/method:<name>]"
-    // For now returning the most recent one for the tool?
-    // Implementation Plan doesn't specify store logic deeply.
-    // We'll just filter by exact scope match or prefix?
-    // Let's assume exact match for tool scope or "tools/call" generic scope if user asks.
     return this.caps.find((c) => c.scope.includes(tool));
   }
 }
@@ -65,4 +59,19 @@ export class TalosAgent {
     public readonly keyProvider: KeyProvider,
     public readonly capStore: CapabilityStore = new InMemoryCapabilityStore(),
   ) {}
+
+  /**
+   * Create a TalosAgent from a Wallet.
+   */
+  static fromWallet(
+    agentId: string,
+    wallet: import("@talosprotocol/sdk").Wallet,
+    capStore?: CapabilityStore,
+  ): TalosAgent {
+    const provider: KeyProvider = {
+      getPublicKey: async () => wallet.publicKey,
+      sign: async (data: Uint8Array) => wallet.sign(data),
+    };
+    return new TalosAgent(agentId, provider, capStore);
+  }
 }

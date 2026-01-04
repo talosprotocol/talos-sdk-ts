@@ -34,3 +34,6 @@ package-lock.json
 
 # Cache
 .eslintcache
+conformance.xml
+junit.xml
+.vscode/

@@ -1,6 +1,6 @@
 {
   "name": "talos-sdk-monorepo",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "private": true,
   "talos": {
     "talos_compatibility": {
@@ -20,7 +20,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier -w .",
     "typecheck": "tsc --build",
-    "version:sync": "node ./scripts/version-sync.mjs"
+    "version:sync": "node ./scripts/version-sync.mjs",
+    "coverage": "vitest run --coverage --coverage.exclude=**/conformance.ts --coverage.exclude=**/test_vectors/**"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -41,7 +42,8 @@
     "prettier": "^3.7.4",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3",
-    "vitest": "^1.2.1"
+    "vitest": "^1.2.1",
+    "@vitest/coverage-v8": "^1.2.1"
   },
   "workspaces": [
     "packages/*"
