@@ -1,12 +1,7 @@
-const ENC = {
-  "+": "-",
-  "/": "_",
-  "=": "",
-} as const;
-
 export class TalosVectorError extends Error {
   constructor(public code: string, public field?: string) {
-    super(`Talos Vector Error: ${code}${field ? ` at ${field}` : ""}`);
+    const suffix = field ? ` at ${field}` : "";
+    super(`Talos Vector Error: ${code}${suffix}`);
     this.name = "TalosVectorError";
   }
 }
@@ -29,7 +24,7 @@ export function encodeBase64Url(input: Uint8Array): string {
   }
 
   // Replace chars for URL safety and strip padding
-  return base64.replace(/[+/=]/g, (m) => ENC[m as keyof typeof ENC] || "");
+  return base64.replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
 }
 
 function btoaString(index: number): string {
@@ -51,20 +46,20 @@ export function decodeBase64Url(input: string): Uint8Array {
     // try base64url directly (supported in Node 14.18+)
     try {
       return new Uint8Array(Buffer.from(input, 'base64url'));
-    } catch (e) {
+    } catch {
       // fallback to manual padding and base64
-      let b64 = input.replace(/-/g, '+').replace(/_/g, '/');
+      let b64 = input.replaceAll('-', '+').replaceAll('_', '/');
       while (b64.length % 4) b64 += '=';
       return new Uint8Array(Buffer.from(b64, 'base64'));
     }
   }
 
   // Browser support
-  const b64 = input.replace(/-/g, '+').replace(/_/g, '/');
+  const b64 = input.replaceAll('-', '+').replaceAll('_', '/');
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) {
-    bytes[i] = bin.charCodeAt(i);
+    bytes[i] = bin.codePointAt(i) ?? 0;
   }
   return bytes;
 }
