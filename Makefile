@@ -40,7 +40,8 @@ clean:
 # Conformance test
 conformance:
 	@echo "Running conformance tests..."
-	npm test -- test/vectors.test.ts
+	@echo "Running conformance tests..."
+	npm test -w @talosprotocol/sdk -- tests/vectors.test.ts
 
 # Doctor check
 doctor:
