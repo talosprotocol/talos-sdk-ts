@@ -31,3 +31,6 @@ test_vectors/
 # Package manager
 package-lock.json
 
+
+# Cache
+.eslintcache
