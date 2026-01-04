@@ -37,9 +37,21 @@ clean:
 	rm -rf .eslintcache
 	@echo "Clean complete. Ready for fresh build."
 
-# No services to start for SDK
+# Conformance test
+conformance:
+	@echo "Running conformance tests..."
+	npm test -- test/vectors.test.ts
+
+# Doctor check
+doctor:
+	@echo "Checking environment..."
+	@node --version || echo "Node.js missing"
+	@npm --version || echo "npm missing"
+	@[ -d "node_modules" ] && echo "node_modules detected" || echo "No node_modules"
+
+# Scripts wrapper
 start:
-	@echo "talos-sdk-ts is a library, no services to start."
+	@./scripts/start.sh
 
 stop:
-	@echo "talos-sdk-ts is a library, no services to stop."
+	@./scripts/stop.sh
