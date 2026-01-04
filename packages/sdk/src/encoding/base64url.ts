@@ -1,18 +1,15 @@
-/**
- * Base64URL encoding/decoding utilities.
- * Compliant with RFC 4648 with no padding.
- */
-
 const ENC = {
   "+": "-",
   "/": "_",
   "=": "",
 } as const;
 
-const DEC = {
-  "-": "+",
-  _: "/",
-} as const;
+export class TalosVectorError extends Error {
+  constructor(public code: string, public field?: string) {
+    super(`Talos Vector Error: ${code}${field ? ` at ${field}` : ""}`);
+    this.name = "TalosVectorError";
+  }
+}
 
 export function encodeBase64Url(input: Uint8Array): string {
   // Convert bytes to standard base64 first
@@ -42,42 +39,32 @@ function btoaString(index: number): string {
 }
 
 export function decodeBase64Url(input: string): Uint8Array {
-  // Restore padding and standard chars
-  let base64 = input.replace(/[-_]/g, (m) => DEC[m as keyof typeof DEC] || "");
-  while (base64.length % 4) {
-    base64 += "=";
+  if (input === null || input === undefined) {
+    throw new TalosVectorError("VECTOR_MISSING_FIELD");
+  }
+  if (typeof input !== "string") {
+    throw new TalosVectorError("INVALID_TYPE", typeof input);
   }
 
-  // Decode standard base64
-  // We use a lookup table to be purely functional and cross-platform safe
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-  // Create lookup table
-  const lookup = new Uint8Array(256);
-  for (let i = 0; i < chars.length; i++) lookup[chars.charCodeAt(i)] = i;
-
-  const len = base64.length;
-  let bufferLength = len * 0.75;
-  if (base64[len - 1] === "=") {
-    bufferLength--;
-    if (base64[len - 2] === "=") bufferLength--;
+  // Node.js support
+  if (typeof Buffer !== 'undefined') {
+    // try base64url directly (supported in Node 14.18+)
+    try {
+      return new Uint8Array(Buffer.from(input, 'base64url'));
+    } catch (e) {
+      // fallback to manual padding and base64
+      let b64 = input.replace(/-/g, '+').replace(/_/g, '/');
+      while (b64.length % 4) b64 += '=';
+      return new Uint8Array(Buffer.from(b64, 'base64'));
+    }
   }
 
-  const bytes = new Uint8Array(bufferLength);
-  let p = 0;
-  let encoded1, encoded2, encoded3, encoded4;
-
-  for (let i = 0; i < len; i += 4) {
-    encoded1 = lookup[base64.charCodeAt(i)];
-    encoded2 = lookup[base64.charCodeAt(i + 1)];
-    encoded3 = lookup[base64.charCodeAt(i + 2)];
-    encoded4 = lookup[base64.charCodeAt(i + 3)];
-
-    bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
-    if (encoded3 !== 64) bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
-    if (encoded4 !== 64) bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+  // Browser support
+  const b64 = input.replace(/-/g, '+').replace(/_/g, '/');
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) {
+    bytes[i] = bin.charCodeAt(i);
   }
-
   return bytes;
 }

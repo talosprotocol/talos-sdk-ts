@@ -26,16 +26,8 @@ function stringify(value: unknown): string {
         if (!Number.isFinite(value)) {
             throw new Error(`Canonical JSON v1: Number must be finite, got ${value}`);
         }
-        // Strict v1: Integers only
-        if (!Number.isInteger(value)) {
-            throw new Error(`Canonical JSON v1: Floats not permitted, got ${value}`);
-        }
-        // RFC 8785 compliant formatting for integers matches JS toString() usually, 
-        // but check for exponential notation on large ints if needed.
-        // JS defaults to exponential for very large/small numbers.
-        // V1 probably deals with timestamps/counters/hashes (strings).
-        // Let's rely on JSON.stringify for the number formatting as per ECMAScript,
-        // assuming safe integer range.
+        // RFC 8785 compliant formatting for numbers.
+        // JS JSON.stringify() handles integers and floats with no trailing zeros correctly.
         return JSON.stringify(value);
     }
 
