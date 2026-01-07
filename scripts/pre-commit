@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+echo "🔍 Running pre-commit checks for talos-sdk-ts..."
+
+echo "1) Linting..."
+npm run lint
+
+echo "2) Testing..."
+npm test
+
+echo "✅ talos-sdk-ts checks passed!"
