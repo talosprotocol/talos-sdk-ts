@@ -2,6 +2,7 @@
   "name": "talos-sdk-monorepo",
   "version": "0.1.28",
   "private": true,
+  "license": "Apache-2.0",
   "talos": {
     "talos_compatibility": {
       "protocol_range": "^1.0.0",

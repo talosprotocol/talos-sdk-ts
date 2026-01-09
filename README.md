@@ -74,3 +74,9 @@ npm install @talos/sdk
 1.  [Mathematical Security Proof](../talos-docs/Mathematical_Security_Proof.md)
 2.  [Talos Contracts](../talos-contracts/README.md)
 3.  [JWE Specification](https://datatracker.ietf.org/doc/html/rfc7516)
+
+## License
+
+Licensed under the Apache License 2.0. See [LICENSE](LICENSE).
+
+Licensed under the Apache License 2.0. See [LICENSE](LICENSE).
