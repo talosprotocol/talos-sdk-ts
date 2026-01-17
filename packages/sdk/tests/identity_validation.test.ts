@@ -6,8 +6,8 @@ import * as path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const VECTORS_PATH = path.resolve(__dirname, "../../../../talos-contracts/test_vectors/sdk/identity_validation.json");
-const SCHEMAS_DIR = path.resolve(__dirname, "../../../../talos-contracts/schemas/rbac");
+const VECTORS_PATH = path.resolve(__dirname, "../../../../../contracts/test_vectors/sdk/identity_vectors.json");
+const SCHEMAS_DIR = path.resolve(__dirname, "../../../../../contracts/schemas/rbac");
 
 function readJson(p: string) {
   return JSON.parse(fs.readFileSync(p, "utf-8"));
@@ -20,11 +20,11 @@ describe("Identity Hardening Validation (SDK)", () => {
     const schema = readJson(path.join(SCHEMAS_DIR, `${schemaType}.schema.json`));
 
     describe(`Schema: ${schemaType}`, () => {
-      // @ts-ignore
+      // @ts-expect-error -- implicit any from json matrix
       for (const [category, vectors] of Object.entries(categories)) {
         const isValidExpected = category === "valid";
         
-        // @ts-ignore
+        // @ts-expect-error -- implicit any from json vectors
         for (const vector of vectors) {
           test(`[${category}] ${vector.name}`, () => {
             if (isValidExpected) {
