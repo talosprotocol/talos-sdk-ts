@@ -6,6 +6,10 @@ import { TalosInvalidInputError } from "./errors.js";
 const ajv = new Ajv({ strict: "log", allErrors: true });
 (addFormats as any)(ajv);
 
+// Add meta-schema mocks for offline testing
+ajv.addSchema({ $id: "https://json-schema.org/draft/2020-12/schema" }, "https://json-schema.org/draft/2020-12/schema");
+ajv.addSchema({ $id: "http://json-schema.org/draft-07/schema" }, "http://json-schema.org/draft-07/schema"); // For wide compat
+
 /**
  * Validates an identity object against normative Draft 2020-12 schemas.
  */

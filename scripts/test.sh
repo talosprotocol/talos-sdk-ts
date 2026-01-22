@@ -1,31 +1,29 @@
-# =============================================================================
-# talos-sdk-ts Test Script
-# =============================================================================
-set -euo pipefail
+#!/bin/bash
+set -e
 
-log() { printf '%s\n' "$*"; }
-info() { printf 'ℹ️  %s\n' "$*"; }
+COMMAND=${1:-unit}
 
-info "Testing talos-sdk-ts..."
-
-info "Installing dependencies..."
-npm ci --silent
-
-info "Running lint..."
-npm run lint
-
-info "Running format check..."
-npm run format:check 2>/dev/null || echo "format:check not configured"
-
-info "Running typecheck..."
-npm run typecheck
-
-info "Running tests..."
-npm test -- --run
-
-if [[ "${TALOS_SKIP_BUILD:-false}" != "true" ]]; then
-  info "Running build..."
-  npm run build
-fi
-
-log "✓ talos-sdk-ts tests passed."
+case "$COMMAND" in
+  unit)
+    echo "=== Running Unit Tests ==="
+    # Build sdk first to ensure inter-package dependencies (sdk -> client) resolve correctly
+    npm run build -w @talosprotocol/sdk
+    npm test -- --run
+    ;;
+  interop)
+    echo "=== Running Vector Compliance (Conformance) ==="
+    make conformance
+    ;;
+  lint)
+    echo "=== Running Lint ==="
+    make lint
+    ;;
+  typecheck)
+    echo "=== Running Typecheck ==="
+    make typecheck
+    ;;
+  *)
+    echo "Error: Unknown command '$COMMAND'"
+    exit 1
+    ;;
+esac
