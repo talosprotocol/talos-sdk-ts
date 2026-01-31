@@ -1,4 +1,5 @@
 ---
+project: sdks/typescript
 description: Build and test the TypeScript SDK
 ---
 

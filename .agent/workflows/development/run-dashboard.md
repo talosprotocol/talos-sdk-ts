@@ -30,6 +30,8 @@ This will:
 4. Build the UI
 5. Start the Backend API (port 8000)
 6. Start the Frontend (port 3000)
+   # Open http://localhost:3000
+   # Log in: admin@talos.security / talos_secure_start
 7. Start the Traffic Generator (10% denial rate for demo)
 
 ## Dashboard Features (v3.2)
@@ -69,7 +71,7 @@ If you prefer to run components individually:
 3. **Run Frontend**
 
    ```bash
-   cd ui/dashboard
+   cd site/dashboard
    npm run dev
    ```
 

@@ -1,4 +1,5 @@
 # Agent workspace: sdks/typescript
+> **Project**: sdks/typescript
 
 This folder contains agent-facing context, tasks, workflows, and planning artifacts for this submodule.
 

@@ -1,4 +1,5 @@
 ---
+project: sdks/typescript
 description: Fetch compliance vectors from upstream
 ---
 
