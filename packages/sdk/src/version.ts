@@ -6,4 +6,4 @@
 
 export const SDK_VERSION = "1.0.0";
 export const SUPPORTED_PROTOCOL_RANGE: [string, string] = ["1.0", "1.x"];
-export const CONTRACT_MANIFEST_HASH = "sha256:pending"; // Updated at build time
+export const CONTRACT_MANIFEST_HASH = "3gi_Ti6G17oMQabjDlVUXcfBqOjN4HswNdD4Lu0uyyI";

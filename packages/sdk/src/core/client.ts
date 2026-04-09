@@ -16,9 +16,11 @@ export const PROTOCOL_MAX = "1.x";
 export class TalosClient {
   private readonly gatewayUrl: string;
   readonly wallet: Wallet;
+  private socket?: WebSocket;
   private connected = false;
   private sessionId?: string;
   private correlationCounter = 0;
+  private pendingRequests = new Map<string, { resolve: (val: any) => void, reject: (err: Error) => void, timeout: any }>();
 
   /**
    * Create a new TalosClient.
@@ -46,15 +48,76 @@ export class TalosClient {
    * Connect to the gateway.
    */
   async connect(): Promise<void> {
-    // TODO: Implement actual WebSocket connection
-    this.connected = true;
-    this.sessionId = `session-${Date.now()}`;
+    if (this.connected) return;
+
+    return new Promise((resolve, reject) => {
+      try {
+        const wsUrl = this.gatewayUrl.replace(/^http/, 'ws');
+        this.socket = new (globalThis.WebSocket as any)(wsUrl, ["talos.1.0"]);
+        
+        const timeout = setTimeout(() => {
+          this.socket?.close();
+          reject(new TalosTransportError("Connection timeout"));
+        }, 5000);
+
+        this.socket!.onopen = () => {
+          clearTimeout(timeout);
+          this.connected = true;
+          // In a real handshake, we would negotiate sessionId here
+          this.sessionId = `session-${Date.now()}`;
+          resolve();
+        };
+
+        this.socket!.onerror = (event: any) => {
+          clearTimeout(timeout);
+          reject(new TalosTransportError(`WebSocket error: ${event.message || 'Unknown error'}`));
+        };
+
+        this.socket!.onmessage = (event) => {
+          this.handleMessage(event.data);
+        };
+
+        this.socket!.onclose = () => {
+          this.connected = false;
+          this.sessionId = undefined;
+          this.cleanupPending(new TalosTransportError("Connection closed"));
+        };
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  private handleMessage(data: any) {
+    try {
+      const message = JSON.parse(data.toString());
+      const correlationId = message.correlationId;
+      if (correlationId && this.pendingRequests.has(correlationId)) {
+        const { resolve, timeout } = this.pendingRequests.get(correlationId)!;
+        clearTimeout(timeout);
+        this.pendingRequests.delete(correlationId);
+        resolve(message);
+      }
+    } catch (err) {
+      console.error("Failed to handle WebSocket message:", err);
+    }
+  }
+
+  private cleanupPending(error: Error) {
+    for (const { reject, timeout } of this.pendingRequests.values()) {
+      clearTimeout(timeout);
+      reject(error);
+    }
+    this.pendingRequests.clear();
   }
 
   /**
    * Gracefully close the connection.
    */
   async close(): Promise<void> {
+    if (this.socket) {
+      this.socket.close();
+    }
     this.connected = false;
     this.sessionId = undefined;
   }
@@ -95,16 +158,29 @@ export class TalosClient {
     tool: string,
     action: string,
   ): Promise<Record<string, unknown>> {
-    if (!this.connected) {
+    if (!this.connected || !this.socket) {
       throw new TalosTransportError("Not connected - call connect() first");
     }
 
     const frame = await this.signMcpRequest(request, tool, action);
+    
+    return new Promise((resolve, reject) => {
+      const correlationId = frame.correlationId;
+      
+      const timeout = setTimeout(() => {
+        this.pendingRequests.delete(correlationId);
+        reject(new TalosTransportError(`Request ${correlationId} timed out`));
+      }, 30000);
 
-    // TODO: Implement actual send/receive over WebSocket
-    return {
-      status: "ok",
-      correlationId: frame.correlationId,
-    };
+      this.pendingRequests.set(correlationId, { resolve, reject, timeout });
+
+      try {
+        this.socket!.send(JSON.stringify(frame));
+      } catch (err) {
+        clearTimeout(timeout);
+        this.pendingRequests.delete(correlationId);
+        reject(err instanceof Error ? err : new Error(String(err)));
+      }
+    });
   }
 }

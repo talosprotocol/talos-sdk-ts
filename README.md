@@ -83,6 +83,72 @@ This monorepo contains two packages:
 | `@talosprotocol/sdk` | Core protocol: identity, crypto, capabilities, MCP signing |
 | `@talosprotocol/client` | Gateway client: WebSocket transport, session management |
 
+## Standards-First A2A v1
+
+The TypeScript SDK now also exposes a standards-first A2A v1 JSON-RPC client for Agent Card discovery and `/rpc` task flows.
+
+```typescript
+import {
+  A2AJsonRpcClient,
+  TALOS_SECURE_CHANNELS_EXTENSION,
+} from "@talosprotocol/sdk";
+
+const client = new A2AJsonRpcClient("https://gateway.talos.example", {
+  apiToken: process.env.TALOS_API_TOKEN,
+});
+
+const card = await client.getAgentCard();
+const supportsSecureChannels = await client.supportsExtension(
+  TALOS_SECURE_CHANNELS_EXTENSION,
+  card,
+);
+
+const task = await client.sendMessage("Hello from TypeScript");
+console.log(task);
+console.log({ supportsSecureChannels });
+```
+
+These helpers call canonical A2A v1 JSON-RPC methods such as `GetExtendedAgentCard`, `SendMessage`, and `ListTasks`; Talos alias method names remain migration-only at the gateway boundary.
+
+For official upstream servers that are not Talos-style `/rpc` targets, the TypeScript client also supports explicit compatibility profiles:
+
+```typescript
+const legacyV03 = new A2AJsonRpcClient("http://127.0.0.1:9999", {
+  interopProfile: "upstream_v0_3",
+});
+
+const javaHybrid = new A2AJsonRpcClient("http://127.0.0.1:9999", {
+  interopProfile: "upstream_java_hybrid",
+});
+```
+
+These profiles are opt-in. `upstream_v0_3` remaps discovery and RPC to upstream `v0.3.0` conventions such as `agent/getAuthenticatedExtendedCard` and `message/send`, while `upstream_java_hybrid` uses the Agent Card's root JSON-RPC URL plus Java-style enum roles for the official Java sample. Canonical `/rpc` remains the default.
+
+For a real HTTP smoke against the local reference fixture:
+
+```bash
+cd sdks/python
+PYTHONPATH=src python3 examples/a2a_v1_reference_server.py --port 8011 --api-token sdk-token
+```
+
+```bash
+cd sdks/typescript
+npm --workspace @talosprotocol/sdk run build
+node examples/a2a_v1_live_interop.mjs --gateway-url http://127.0.0.1:8011 --api-token sdk-token --prompt "hello from TypeScript" --exercise-streams
+```
+
+For the pinned official upstream Python sample:
+
+```bash
+node examples/a2a_v1_live_interop.mjs --gateway-url http://127.0.0.1:9999 --interop-profile upstream_v0_3 --prompt "hello from TypeScript" --exercise-streams
+```
+
+For the pinned official upstream Java sample:
+
+```bash
+node examples/a2a_v1_live_interop.mjs --gateway-url http://127.0.0.1:9999 --interop-profile upstream_java_hybrid --prompt "hello from TypeScript" --exercise-streams
+```
+
 ## API Reference
 
 ### Wallet (Identity)

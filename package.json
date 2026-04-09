@@ -46,6 +46,13 @@
     "vitest": "^1.2.1",
     "@vitest/coverage-v8": "^1.2.1"
   },
+  "overrides": {
+    "ajv": "^8.18.0",
+    "ajv-formats": {
+      "ajv": "^8.18.0"
+    },
+    "undici": "^7.24.0"
+  },
   "workspaces": [
     "packages/*"
   ]

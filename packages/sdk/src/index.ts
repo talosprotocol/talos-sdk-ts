@@ -20,3 +20,4 @@ export * from "./core/capability.js";
 export * from "./core/mcp.js";
 export * from "./core/frames.js";
 export * from "./core/envelope.js";
+export * from "./core/a2a_v1.js";
