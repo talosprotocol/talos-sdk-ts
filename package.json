@@ -37,14 +37,14 @@
     "@types/node": "^20.11.5",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
+    "@vitest/coverage-v8": "^4.1.4",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.1.8",
     "lint-staged": "^15.5.2",
     "prettier": "^3.7.4",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3",
-    "vitest": "^1.2.1",
-    "@vitest/coverage-v8": "^1.2.1"
+    "vitest": "^4.1.4"
   },
   "overrides": {
     "ajv": "^8.18.0",
