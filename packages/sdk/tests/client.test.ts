@@ -13,7 +13,7 @@ describe("TalosClient", () => {
   };
 
   beforeEach(() => {
-    vi.stubGlobal("WebSocket", vi.fn().mockImplementation(() => mockWs));
+    vi.stubGlobal("WebSocket", vi.fn(function() { return mockWs; }));
     mockWs.send.mockClear();
     mockWs.close.mockClear();
   });
