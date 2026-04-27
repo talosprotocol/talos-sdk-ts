@@ -61,11 +61,8 @@ export class TalosClient {
         }, 5000);
 
         this.socket!.onopen = () => {
-          clearTimeout(timeout);
-          this.connected = true;
-          // In a real handshake, we would negotiate sessionId here
-          this.sessionId = `session-${Date.now()}`;
-          resolve();
+          // Send an initialization frame as part of the handshake
+          this.socket!.send(JSON.stringify({ type: "init", did: this.wallet.did }));
         };
 
         this.socket!.onerror = (event: any) => {
@@ -74,7 +71,29 @@ export class TalosClient {
         };
 
         this.socket!.onmessage = (event) => {
-          this.handleMessage(event.data);
+          try {
+            const message = JSON.parse(event.data.toString());
+            
+            // Handle initialization response
+            if (!this.connected && message.type === "init_ack") {
+              clearTimeout(timeout);
+              this.connected = true;
+              this.sessionId = message.session_id || `session-${Date.now()}`;
+              resolve();
+              return;
+            }
+
+            // Handle normal responses
+            const correlationId = message.correlationId;
+            if (correlationId && this.pendingRequests.has(correlationId)) {
+              const { resolve, timeout: reqTimeout } = this.pendingRequests.get(correlationId)!;
+              clearTimeout(reqTimeout);
+              this.pendingRequests.delete(correlationId);
+              resolve(message);
+            }
+          } catch (err) {
+            console.error("Failed to handle WebSocket message:", err);
+          }
         };
 
         this.socket!.onclose = () => {

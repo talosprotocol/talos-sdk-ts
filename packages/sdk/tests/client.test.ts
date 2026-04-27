@@ -37,8 +37,16 @@ describe("TalosClient", () => {
 
     const connectPromise = client.connect();
     
-    // Simulate open
+    // Simulate open and init_ack
     if (mockWs.onopen) (mockWs as any).onopen();
+    if (mockWs.onmessage) {
+      (mockWs as any).onmessage({
+        data: JSON.stringify({
+          type: "init_ack",
+          session_id: "test-session"
+        })
+      });
+    }
     
     await connectPromise;
     await client.close();
@@ -56,6 +64,14 @@ describe("TalosClient", () => {
 
     const connectPromise = client.connect();
     if (mockWs.onopen) (mockWs as any).onopen();
+    if (mockWs.onmessage) {
+      (mockWs as any).onmessage({
+        data: JSON.stringify({
+          type: "init_ack",
+          session_id: "test-session"
+        })
+      });
+    }
     await connectPromise;
 
     const frame = await client.signMcpRequest({ data: 123 }, "aws:s3", "list");
@@ -72,13 +88,21 @@ describe("TalosClient", () => {
     
     const connectPromise = client.connect();
     if (mockWs.onopen) (mockWs as any).onopen();
+    if (mockWs.onmessage) {
+      (mockWs as any).onmessage({
+        data: JSON.stringify({
+          type: "init_ack",
+          session_id: "test-session"
+        })
+      });
+    }
     await connectPromise;
 
     const sendPromise = client.signAndSendMcp({foo: "bar"}, "tool", "action");
     
-    // Check that it sent something
-    await vi.waitFor(() => expect(mockWs.send).toHaveBeenCalled());
-    const sentFrame = JSON.parse(mockWs.send.mock.calls[0][0]);
+    // Check that it sent something (first call was init, second is message)
+    await vi.waitFor(() => expect(mockWs.send).toHaveBeenCalledTimes(2));
+    const sentFrame = JSON.parse(mockWs.send.mock.calls[1][0]);
     
     // Simulate response
     if (mockWs.onmessage) {
