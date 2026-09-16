@@ -13,6 +13,10 @@ updates:
           - "minor"
           - "patch"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -27,6 +31,10 @@ updates:
           - "minor"
           - "patch"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   - package-ecosystem: "npm"
     directory: "/packages/client"
@@ -41,6 +49,10 @@ updates:
           - "minor"
           - "patch"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   - package-ecosystem: "npm"
     directory: "/packages/sdk"
@@ -55,3 +67,7 @@ updates:
           - "minor"
           - "patch"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
