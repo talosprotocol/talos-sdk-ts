@@ -44,7 +44,7 @@
     "prettier": "^3.7.4",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.11"
   },
   "overrides": {
     "ajv": "^8.18.0",
