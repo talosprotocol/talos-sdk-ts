@@ -23,12 +23,12 @@
   },
   "dependencies": {
     "@talosprotocol/sdk": "*",
-    "undici": "^7.24.0"
+    "undici": "^7.29.1"
   },
   "devDependencies": {
-    "@types/node": "^20.19.28",
+    "@types/node": "^20.19.43",
     "tsup": "^8.0.1",
-    "tsx": "^4.21.0",
+    "tsx": "^4.23.13",
     "typescript": "^5.3.3",
     "vitest": "^4.1.4"
   }
